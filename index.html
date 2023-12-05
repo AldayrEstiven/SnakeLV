@@ -5,68 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
     <style>
-        /* Estilos CSS (mantén los estilos existentes) */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fce4ec; /* Fondo rosa claro */
+            margin: 0;
+        }
+
+        #game-container {
+            text-align: center;
+            background-color: #fff; /* Fondo blanco */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding-bottom: 40px; /* Espacio para la dedicatoria */
+            margin-bottom: 20px;
+        }
+
+        #snakeCanvas {
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+
+        h2 {
+            color: #ff4081; /* Rosa oscuro */
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #333;
+            margin: 10px;
+        }
+
+        #dedication {
+            color: #333;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <!-- Contenido HTML (mantén el contenido existente) -->
+        <h2>Score: <span id="score">0</span></h2>
+        <p id="gameMessage">Hey there! Ready to play and chat? Eat the red food and let's see how well you can control the snake!</p>
+        <canvas id="snakeCanvas" width="400" height="400"></canvas>
+        <p id="dedication">Dedicated to Aldayr Palencia in Morse Code</p>
     </div>
     <script>
-        // Código JavaScript (con las modificaciones para el control táctil)
-
         const canvas = document.getElementById('snakeCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const gameMessageElement = document.getElementById('gameMessage');
 
-        // Variables para el control táctil
-        let touchStartX = 0;
-        let touchStartY = 0;
+        const gridSize = 20;
+        let snake = [{ x: 5, y: 5 }];
+        let direction = 'right';
+        let food = createFood();
+        let score = 0;
 
-        // Resto del código JavaScript (mantén el código existente)
+        const messages = [
+            "Nice one! Keep going!",
+            // ... (mensajes existentes)
+        ];
 
-        document.addEventListener('keydown', function (event) {
-            // ... (mantén el código existente)
-        });
-
-        // Eventos táctiles para dispositivos móviles
-        canvas.addEventListener('touchstart', handleTouchStart);
-        canvas.addEventListener('touchmove', handleTouchMove);
-
-        function handleTouchStart(event) {
-            touchStartX = event.touches[0].clientX;
-            touchStartY = event.touches[0].clientY;
+        function getRandomMessage() {
+            return messages[Math.floor(Math.random() * messages.length)];
         }
 
-        function handleTouchMove(event) {
-            const touchEndX = event.touches[0].clientX;
-            const touchEndY = event.touches[0].clientY;
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-
-            // Determinar la dirección basada en el desplazamiento táctil
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 0 && direction !== 'left') {
-                    direction = 'right';
-                } else if (deltaX < 0 && direction !== 'right') {
-                    direction = 'left';
-                }
-            } else {
-                if (deltaY > 0 && direction !== 'up') {
-                    direction = 'down';
-                } else if (deltaY < 0 && direction !== 'down') {
-                    direction = 'up';
-                }
+            // Dibujar serpiente
+            ctx.fillStyle = 'green';
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize, gridSize);
             }
 
-            // Actualizar el punto de inicio para el próximo movimiento táctil
-            touchStartX = touchEndX;
-            touchStartY = touchEndY;
+            // Dibujar comida
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+
+            // Mostrar puntuación
+            scoreElement.textContent = score;
         }
 
-        // Resto del código JavaScript (mantén el código existente)
+        // ... (resto del código)
+
+        function gameLoop() {
+            update();
+            draw();
+        }
 
         setInterval(gameLoop, 200); // Ajuste el intervalo a 200 milisegundos para hacer que la serpiente sea más lenta
     </script>
