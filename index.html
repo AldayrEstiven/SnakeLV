@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fce4ec; /* Fondo rosa claro */
+            margin: 0;
+        }
+
+        #game-container {
+            text-align: center;
+            background-color: #fff; /* Fondo blanco */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding-bottom: 40px; /* Espacio para la dedicatoria */
+            margin-bottom: 20px;
+        }
+
+        #snakeCanvas {
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+
+        h2 {
+            color: #ff4081; /* Rosa oscuro */
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #333;
+            margin: 10px;
+        }
+
+        #dedication {
+            color: #333;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h2>Score: <span id="score">0</span></h2>
+        <p id="gameMessage">Hey there! Ready to play and chat? Eat the red food and let's see how well you can control the snake!</p>
+        <canvas id="snakeCanvas" width="400" height="400"></canvas>
+        <p id="dedication">Dedicated to Aldayr Palencia in Morse Code</p>
+    </div>
+    <script>
+        const canvas = document.getElementById('snakeCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const gameMessageElement = document.getElementById('gameMessage');
+
+        const gridSize = 20;
+        let snake = [{ x: 5, y: 5 }];
+        let direction = 'right';
+        let food = createFood();
+        let score = 0;
+
+        const messages = [
+            "Nice one! Keep going!",
+            "You're doing great! By the way, what's your favorite snack?",
+            "Wow, you're on fire! Let's celebrate with a virtual high-five!",
+            "Oops, watch out for the walls! You got this!",
+            "Looking good! Ever played Snake on an old Nokia phone?",
+            "Impressive! Are you secretly a snake charmer?",
+            "Snakelicious! That's a word, right?",
+            "You're unstoppable! What's your secret?",
+            "Snake-tastic! Keep slithering!",
+            "Boom! Another point for you!",
+            "Smooth moves! Do you dance like that too?",
+            "You're a snake whisperer!",
+            "Whoa, you're getting really good at this!",
+            "Bite-sized victory! Keep it up!",
+            "Game on! How's your day going?",
+            "Snaky business! What's your high score?",
+            "Snake alert! Watch out for your tail!",
+            "Pro snake-handler in the making!",
+            "You're making this snake proud!",
+            "Crushing it! Any other games you enjoy?",
+        ];
+
+        function getRandomMessage() {
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar serpiente
+            ctx.fillStyle = 'green';
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize, gridSize);
+            }
+
+            // Dibujar comida
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+
+            // Mostrar puntuación
+            scoreElement.textContent = score;
+        }
+
+        function update() {
+            let head = { x: snake[0].x, y: snake[0].y };
+
+            // Mover la cabeza de la serpiente en la dirección adecuada
+            if (direction === 'right') head.x++;
+            else if (direction === 'left') head.x--;
+            else if (direction === 'up') head.y--;
+            else if (direction === 'down') head.y++;
+
+            // Verificar colisión con la comida
+            if (head.x === food.x && head.y === food.y) {
+                snake.push({});
+                food = createFood();
+                score += 10;
+
+                // Actualizar el mensaje según la puntuación
+                gameMessageElement.textContent = getRandomMessage();
+            }
+
+            // Mover la serpiente
+            snake.unshift(head);
+            snake.pop(); // Eliminar la última parte de la serpiente
+
+            // Verificar colisión con las paredes
+            if (head.x < 0 || head.x >= canvas.width / gridSize || head.y < 0 || head.y >= canvas.height / gridSize) {
+                resetGame();
+            }
+
+            // Verificar colisión con sí misma
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    resetGame();
+                }
+            }
+        }
+
+        function createFood() {
+            return {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)),
+                y: Math.floor(Math.random() * (canvas.height / gridSize))
+            };
+        }
+
+        function resetGame() {
+            snake = [{ x: 5, y: 5 }];
+            direction = 'right';
+            food = createFood();
+            score = 0;
+
+            // Reiniciar el mensaje
+            gameMessageElement.textContent = "Game over! Want to try again?";
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowUp' && direction !== 'down') {
+                direction = 'up';
+            } else if (event.key === 'ArrowDown' && direction !== 'up') {
+                direction = 'down';
+            } else if (event.key === 'ArrowLeft' && direction !== 'right') {
+                direction = 'left';
+            } else if (event.key === 'ArrowRight' && direction !== 'left') {
+                direction = 'right';
+            }
+        });
+
+        function gameLoop() {
+            update();
+            draw();
+        }
+
+        setInterval(gameLoop, 200); // Ajuste el intervalo a 200 milisegundos para hacer que la serpiente sea más lenta
+    </script>
+</body>
+</html>
